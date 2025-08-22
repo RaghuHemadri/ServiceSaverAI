@@ -1,0 +1,53 @@
+**/*.DS_STORE
+**/.env
+**/*.vscode
+**/.venv/
+
+# OS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# Environment files
+.env
+.env.*
+.env.local
+
+# Node / React
+node_modules/
+npm-debug.log
+yarn-error.log
+build/
+dist/
+
+# IDEs
+.vscode/
+.idea/
+
+# Secrets / service account keys
+backend/firebase_adminsdk.json
+firebase_adminsdk.json
+serviceAccount*.json
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+
+# Android debug keystore (often contains private keys)
+android/app/debug.keystore
+
+# Firebase debug logs
+firebase-debug.log
+
+# Misc
+*.log

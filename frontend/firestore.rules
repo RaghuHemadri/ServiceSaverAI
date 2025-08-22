@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to all users for now (change this for production!)
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow public read access for testing (remove in production)
+    match /public/{document=**} {
+      allow read: if true;
+    }
+  }
+}
