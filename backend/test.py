@@ -2,8 +2,8 @@
 import os
 from twilio.rest import Client
 
-# TWILIO_ACCOUNT_SID="ACe724c54a311c49d5002391048966d38e"
-# TWILIO_AUTH_TOKEN="e87e60d26113f19811835adaed752ac8"
+TWILIO_ACCOUNT_SID="ACe724c54a311c49d5002391048966d38e"
+TWILIO_AUTH_TOKEN="e87e60d26113f19811835adaed752ac8"
 
 # Find your Account SID and Auth Token at twilio.com/console
 # and set the environment variables. See http://twil.io/secure
