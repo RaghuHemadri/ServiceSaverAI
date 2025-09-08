@@ -64,3 +64,4 @@ This guide will help you set up the backend server for the voice assistant appli
 
 - Ensure the phone number you are calling is verified in the Twilio Console if you are in trial mode.
 - If you encounter any issues, check the logs for error messages and verify your environment variables are set correctly.
+
