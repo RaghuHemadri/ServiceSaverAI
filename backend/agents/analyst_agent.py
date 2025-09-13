@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from .config import Config
 from . import firebase
 
-analyst_system_prompt = """You are a moving services analyst. Your task is to:
+analyst_system_prompt = """You are a service analyst. Your task is to:
 1. Review all call transcripts
 2. Compare quotes and services offered
 3. Analyze the negotiation results
@@ -13,21 +13,23 @@ analyst_system_prompt = """You are a moving services analyst. Your task is to:
    - Price
    - Services included
    - Customer needs
-   - Other factors (e.g., mover's reputation, reviews, etc.)
+   - Other factors (e.g., provider's reputation, reviews, etc.)
 
 Format your response as a clear recommendation on who to choose with supporting evidence, if no clear evidence, respond with INCONCLUSIVE.
 List the vendors you contacted and explain their differences on how you arrived at your final recommendation.
 The final output should be in the following format:
 
-Final Recomendation: Vendor name
+Final Recommendation: Vendor name
 
 **Rationale**
 [Evidence supporting recommendation]
 """
 
 class AnalystAgent:
-    def __init__(self, user_id: str, model: str = Config.ANALYST_MODEL):
+    def __init__(self, user_id: str, service_category: str = 'movers', model: str = Config.ANALYST_MODEL):
         self.llm = ChatOpenAI(model=model)
+        self.user_id = user_id
+        self.service_category = service_category
         self.user_id = user_id
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", analyst_system_prompt),

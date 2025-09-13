@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Geico,(800) 207-7847,4.5,"auto,home,life",100,500,"Auto insurance, Home insurance, Life insurance"
+State Farm,(855) 733-7333,4.3,"auto,home,life,health",120,600,"Auto, Home, Life, Health insurance"
+Progressive,(855) 347-3939,4.2,"auto,commercial",90,450,"Auto insurance, Commercial insurance"
+Allstate,(877) 810-2920,4.1,"auto,home,life",110,550,"Auto, Home, Life insurance"
+USAA,(800) 531-8722,4.7,"auto,home,life",95,480,"Auto, Home, Life insurance (Military)"
+Farmers Insurance,(888) 327-6335,4.0,"auto,home,life",105,520,"Auto, Home, Life insurance"

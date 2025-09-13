@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Handy,(855) 262-6098,4.1,"cleaning,repairs,assembly",50,300,"House cleaning, Furniture assembly, Home repairs"
+TaskRabbit,(844) 340-8275,4.3,"handyman,moving,cleaning",40,250,"Handyman services, Moving help, Cleaning"
+Angie's List,(888) 944-5478,4.2,"contractors,repairs",75,500,"Contractor referrals, Home repairs"
+HomeAdvisor,(877) 947-3639,4.0,"contractors,remodeling",100,1000,"Home improvement, Contractor matching"
+Mr. Handyman,(877) 256-3376,4.4,"repairs,maintenance",80,400,"Home repairs, Maintenance services"
+Thumbtack,(877) 470-4942,4.2,"various,local",30,600,"Local service professionals, Various home services"

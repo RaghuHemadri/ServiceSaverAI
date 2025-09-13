@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Petco,(888) 824-7257,4.2,"vet_services,grooming,supplies",30,300,"Veterinary services, Pet grooming, Supplies"
+PetSmart,(888) 839-9638,4.1,"grooming,training,vet",25,250,"Pet grooming, Training, Veterinary services"
+VCA Animal Hospitals,(800) 872-8387,4.4,"veterinary,emergency",50,500,"Veterinary care, Emergency services"
+Banfield Pet Hospital,(800) 838-6929,4.0,"veterinary,wellness",40,400,"Veterinary care, Wellness plans"
+Camp Bow Wow,(877) 566-9663,4.3,"daycare,boarding,grooming",35,200,"Pet daycare, Boarding, Grooming"
+Rover,(888) 453-7889,4.5,"pet_sitting,dog_walking",15,100,"Pet sitting, Dog walking, Boarding"

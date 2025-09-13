@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Coursera,(855) 325-0900,4.5,"online_courses,certificates",29,79,"Online courses, Professional certificates"
+Udemy,(800) 581-9192,4.3,"online_courses,skills",15,200,"Online courses, Skill development"
+edX,(617) 715-4533,4.4,"university_courses,certificates",50,300,"University courses, Professional education"
+Khan Academy,(650) 963-4300,4.6,"free_education,K12",0,0,"Free online education, K-12 support"
+Skillshare,(855) 318-0748,4.2,"creative_skills,business",99,168,"Creative skills, Business courses"
+LinkedIn Learning,(855) 253-3700,4.1,"professional_development",29,59,"Professional development, Business skills"

@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Duke Energy,(800) 777-9898,3.8,"electricity,gas",80,300,"Electricity, Natural gas"
+Southern Company,(800) 888-7008,4.0,"electricity,gas",75,280,"Electric utility, Gas services"
+PG&E,(800) 743-5000,3.7,"electricity,gas",90,350,"Pacific Gas & Electric, Utility services"
+ConEd,(800) 752-6633,3.9,"electricity,gas",85,320,"Consolidated Edison, Utility services"
+Waste Management,(800) 963-4776,4.1,"waste,recycling",25,100,"Waste collection, Recycling services"
+Republic Services,(800) 299-4898,4.0,"waste,recycling",30,110,"Waste management, Recycling"

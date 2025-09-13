@@ -86,9 +86,10 @@ INITIAL_PROMPT = (
 )
 
 class VoiceAgent:
-    def __init__(self, user_id, model: str = Config.VOICE_MODEL):
+    def __init__(self, user_id, service_category: str = 'movers', model: str = Config.VOICE_MODEL):
         self.llm = ChatOpenAI(model=model)
         self.user_id = user_id
+        self.service_category = service_category
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", voice_system_prompt),
             ("human", "Customer Info: {customer_info}\nNegotiation Strategy: {strategy}\nMover: {mover}")

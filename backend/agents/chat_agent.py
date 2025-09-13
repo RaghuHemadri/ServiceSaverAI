@@ -29,30 +29,78 @@ from .state_models import CustomerInfo
 from . import firebase
 
 chat_system_prompt = """
-You are an AI agent that helps in collection of information about the user in the home moving.
-You need to gather:
-1. Name
-2. Contact phone number
-3. Current address / zipcode,
-4. Destination address / zipcode
-5. Move out date
-6. Move in date
-7. Size of their apartment (number of bedrooms)
-8. Inventory of their furniture and other discrete items or boxes
-9. Whether packing assistance is needed
-10. Any special items requiring special handling
-11. Do they need storage (if move in date is more than 2 weeks away from move out)
+You are an AI agent that helps in collection of information about the user for {service_type} services.
 
-Probe the user for information till you have everything you need. Be precise and keep the conversation short and to the point.
-If the user provides vague information about anything, for example address, try to use general estimates / averages and ask for confirmation.
+Based on the service category, gather the relevant information:
+
+For MOVING services:
+1. Name, 2. Contact phone number, 3. Current address/zipcode, 4. Destination address/zipcode
+5. Move out date, 6. Move in date, 7. Size of apartment (bedrooms), 8. Inventory
+9. Packing assistance needed, 10. Special items, 11. Storage needs
+
+For TELECOM services:
+1. Name, 2. Contact phone number, 3. Current address/zipcode
+4. Current provider, 5. Current plan details, 6. Monthly bill amount
+7. Service needs (internet/phone/TV), 8. Speed requirements, 9. Contract end date
+
+For INSURANCE services:
+1. Name, 2. Contact phone number, 3. Address/zipcode
+4. Insurance type needed, 5. Current provider (if any), 6. Current premium
+7. Coverage requirements, 8. Deductible preferences, 9. Claims history
+
+For HOME SERVICES:
+1. Name, 2. Contact phone number, 3. Address/zipcode
+4. Service type needed, 5. Problem description, 6. Urgency level
+7. Previous service history, 8. Budget range, 9. Preferred timing
+
+For AUTO SERVICES:
+1. Name, 2. Contact phone number, 3. Address/zipcode
+4. Vehicle details (make/model/year), 5. Service needed, 6. Problem description
+7. Mileage, 8. Last service date, 9. Budget range
+
+For HEALTHCARE services:
+1. Name, 2. Contact phone number, 3. Address/zipcode
+4. Service type needed, 5. Current provider (if any), 6. Insurance details
+7. Medical history (relevant), 8. Urgency level, 9. Budget considerations
+
+For EDUCATION services:
+1. Name, 2. Contact phone number, 3. Address/zipcode
+4. Education type/level, 5. Subject area, 6. Current situation
+7. Budget range, 8. Timeline, 9. Specific requirements
+
+For PET SERVICES:
+1. Name, 2. Contact phone number, 3. Address/zipcode
+4. Pet type and details, 5. Service type needed, 6. Pet's medical history (if relevant)
+7. Special requirements, 8. Budget range, 9. Preferred timing
+
+Probe the user for information till you have everything you need for their specific service category.
+Be precise and keep the conversation short and to the point.
+If the user provides vague information, try to use reasonable estimates and ask for confirmation.
 """
 
 class ChatAgent:
-    def __init__(self, user_id: str, model: str = Config.CHAT_MODEL):
+    def __init__(self, user_id: str, service_category: str = 'movers', model: str = Config.CHAT_MODEL):
         self.llm = ChatOpenAI(model=model)
         self.user_id = user_id
+        self.service_category = service_category
+        
+        # Map service categories to readable names
+        service_names = {
+            'movers': 'MOVING',
+            'telecom': 'TELECOM',
+            'insurance': 'INSURANCE',
+            'home_services': 'HOME SERVICES',
+            'auto_services': 'AUTO SERVICES',
+            'healthcare': 'HEALTHCARE',
+            'education': 'EDUCATION',
+            'pet_services': 'PET SERVICES',
+            'finance': 'FINANCIAL/UTILITIES'
+        }
+        
+        service_type = service_names.get(service_category, 'MOVING')
+        
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", chat_system_prompt),
+            ("system", chat_system_prompt.format(service_type=service_type)),
             ("human", "{input}"),
         ])
 

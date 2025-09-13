@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Verizon,(800) 922-0204,4.2,"wireless,internet,tv",50,200,"Mobile plans, Internet, TV packages"
+AT&T,(800) 331-0500,4.1,"wireless,internet,tv",45,180,"Mobile plans, Internet, TV bundles"
+T-Mobile,(877) 746-0909,4.3,"wireless,prepaid",30,150,"Mobile plans, Prepaid options"
+Comcast Xfinity,(800) 934-6489,3.8,"internet,tv,phone",40,220,"Internet, Cable TV, Phone"
+Spectrum,(855) 243-8892,3.9,"internet,tv",35,190,"Internet, Cable TV packages"
+Cox Communications,(800) 234-3993,4.0,"internet,tv,phone",45,170,"Internet, TV, Home phone"

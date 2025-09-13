@@ -103,9 +103,13 @@ export function useChatAPI()
 
     const [messages, setMessages] = useState([]);
 
-    const addMessage = async (message: string) => {
+    const addMessage = async (message: string, serviceCategory?: string) => {
         setMessages(messages => [...messages, { role: 'user', content: message }, { role: 'assistant', content: 'Thinking...' }]);
-        const response = await mutation.mutateAsync({ message });
+        const requestData = { 
+            message,
+            ...(serviceCategory && { service_category: serviceCategory })
+        };
+        const response = await mutation.mutateAsync(requestData);
         console.log(response);
         // setMessages(messages => [...messages.slice(0, -1), { role: 'assistant', content: response.data.message }]);
     }

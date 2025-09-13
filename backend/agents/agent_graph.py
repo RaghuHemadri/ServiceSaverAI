@@ -15,14 +15,15 @@ from . import firebase
 
 class AgentGraph:
 
-    def __init__(self, user_id = 'user1'):
+    def __init__(self, user_id = 'user1', service_category = 'movers'):
         self.user_id = user_id
+        self.service_category = service_category
 
-        # Initialize agents
-        chat_agent = ChatAgent(user_id)
-        strategist_agent = StrategistAgent(user_id)
-        voice_agent = VoiceAgent(user_id)
-        analyst_agent = AnalystAgent(user_id)
+        # Initialize agents with service category
+        chat_agent = ChatAgent(user_id, service_category)
+        strategist_agent = StrategistAgent(user_id, service_category)
+        voice_agent = VoiceAgent(user_id, service_category)
+        analyst_agent = AnalystAgent(user_id, service_category)
 
         # Create workflow graph
         workflow = StateGraph(State)
@@ -68,7 +69,10 @@ class AgentGraph:
         memory = MemorySaver() # to change this into a sqlitessaver and connect to the DB
         self.graph = workflow.compile(checkpointer=memory) #, interrupt_before=["tools"]
 
-        firebase.update_data(self.user_id, data = { "status": firebase.AppStatus.INFO_COLLECTION }, merge=False)
+        firebase.update_data(self.user_id, data = { 
+            "status": firebase.AppStatus.INFO_COLLECTION,
+            "service_category": service_category
+        }, merge=False)
 
 
 if __name__ == "__main__":

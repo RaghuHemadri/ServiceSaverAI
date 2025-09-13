@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Jiffy Lube,(800) 344-6933,4.2,"oil_change,maintenance",25,150,"Oil changes, Basic maintenance"
+Valvoline Instant Oil Change,(800) 823-6164,4.3,"oil_change,fluids",30,160,"Oil changes, Fluid services"
+AutoZone,(800) 288-6966,4.1,"parts,diagnostics",20,500,"Auto parts, Diagnostics, Battery testing"
+Midas,(800) 647-2721,4.0,"brakes,exhaust,oil",50,800,"Brake service, Exhaust, Oil changes"
+Pep Boys,(800) 737-2697,3.9,"tires,brakes,maintenance",40,600,"Tire service, Brakes, General maintenance"
+AAA,(800) 222-4357,4.4,"roadside,insurance",100,400,"Roadside assistance, Auto insurance"

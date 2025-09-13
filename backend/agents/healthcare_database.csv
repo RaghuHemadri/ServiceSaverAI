@@ -1,0 +1,7 @@
+name,phone,rating,specialties,min_price,max_price,services
+Kaiser Permanente,(800) 464-4000,4.1,"health_insurance,medical",200,800,"Health insurance, Medical services"
+Blue Cross Blue Shield,(888) 630-2583,4.0,"health_insurance,dental",150,700,"Health insurance, Dental coverage"
+Aetna,(800) 872-3862,4.2,"health_insurance,medicare",180,750,"Health insurance, Medicare plans"
+Humana,(800) 833-2364,4.1,"medicare,health_insurance",160,600,"Medicare, Health insurance"
+UnitedHealthcare,(888) 815-3914,4.0,"health_insurance,medicare",190,820,"Health insurance, Medicare coverage"
+Cigna,(800) 244-6224,4.2,"health_insurance,dental",175,780,"Health insurance, Dental and vision"

@@ -118,6 +118,12 @@ function ServiceCategorySelector({ onSelectService }: { onSelectService: (servic
 			examples: ['Tuition fees', 'Training courses', 'Certification programs', 'Textbooks']
 		},
 		{ 
+			title: 'Pet Services', 
+			icon: 'dog', 
+			color: '#795548',
+			examples: ['Veterinary care', 'Pet grooming', 'Pet training', 'Pet boarding']
+		},
+		{ 
 			title: 'Utilities', 
 			icon: 'lightning-bolt', 
 			color: '#607D8B',
@@ -253,11 +259,35 @@ export default function ChatScreen() {
 
 	const [prompt, setPrompt] = useState('');
 	const [isStartingOver, setIsStartingOver] = useState(false);
+	const [selectedServiceCategory, setSelectedServiceCategory] = useState<string | null>(null);
 	const { messages, addMessage } = useChatAPI();
 	const { session } = useSessionAPI();
 
 	const handleServiceSelect = (serviceText: string) => {
+		// Extract service category from the text
+		const categoryMap: Record<string, string> = {
+			'moving & relocation': 'movers',
+			'telecom & internet': 'telecom',
+			'insurance': 'insurance',
+			'home services': 'home_services',
+			'auto services': 'auto_services',
+			'healthcare': 'healthcare',
+			'education': 'education',
+			'pet services': 'pet_services',
+			'utilities': 'finance' // Utilities can be grouped under finance for now
+		};
+		
+		const selectedCategory = serviceText.toLowerCase().replace('i need help with ', '');
+		const serviceKey = categoryMap[selectedCategory] || 'movers'; // fallback to movers
+		
+		setSelectedServiceCategory(serviceKey);
 		setPrompt(serviceText);
+		
+		// Immediately send the message with service category
+		if (serviceText.trim()) {
+			addMessage(serviceText, serviceKey);
+			setPrompt('');
+		}
 	};
 
 	const handleStartOver = async () => {
@@ -341,7 +371,7 @@ export default function ChatScreen() {
 							<Button 
 								onPress={() => { 
 									if (prompt.trim()) {
-										addMessage(prompt); 
+										addMessage(prompt, selectedServiceCategory || undefined); 
 										setPrompt(''); 
 									}
 								}}

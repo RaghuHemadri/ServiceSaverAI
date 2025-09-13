@@ -35,15 +35,17 @@ async def chat():
 
 class ChatBody(BaseModel):
     message: str
+    service_category: str = "movers"  # Default to movers for backward compatibility
 
 @app.post("/api/chat")
 async def chat(data: ChatBody, background_tasks: BackgroundTasks, user = Depends(firebase.verify_user)):
     message = data.message
+    service_category = data.service_category
 
     if user['uid'] in sessions:
         agent_graph = sessions[user['uid']]
     else:
-        agent_graph = AgentGraph(user['uid'])
+        agent_graph = AgentGraph(user['uid'], service_category)
         sessions[user['uid']] = agent_graph
 
     def run_graph():
