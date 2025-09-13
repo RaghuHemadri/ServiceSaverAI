@@ -1,5 +1,5 @@
 **/*.DS_STORE
-**/.env
+# **/.env
 **/*.vscode
 **/.venv/
 
@@ -15,9 +15,9 @@ venv/
 env/
 
 # Environment files
-.env
-.env.*
-.env.local
+# .env
+# .env.*
+# .env.local
 
 # Node / React
 node_modules/
@@ -31,8 +31,8 @@ dist/
 .idea/
 
 # Secrets / service account keys
-backend/firebase_adminsdk.json
-firebase_adminsdk.json
+# backend/firebase_adminsdk.json
+# firebase_adminsdk.json
 serviceAccount*.json
 *.key
 *.pem

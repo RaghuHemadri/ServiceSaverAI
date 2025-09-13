@@ -1,0 +1,16 @@
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
+
+LANGCHAIN_API_KEY="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"
+LANGCHAIN_PROJECT="pr-crushing-input-100"
+
+OPENAI_API_KEY="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"
+TWILIO_ACCOUNT_SID="ACe724c54a311c49d5002391048966d38e"
+TWILIO_AUTH_TOKEN="e87e60d26113f19811835adaed752ac8"
+TWILIO_PHONE_NUMBER="+1 775 416 7585"
+
+SERVER_ENDPOINT="https://a9e6fe81e10a.ngrok-free.app"
+
+SAMPLE_MOVER_PHONE_NUMBER="+1 551 362 7996"
+# Set to 'false' to use real Twilio calls, 'true' for simulation mode
+USE_SIMULATION_MODE=true
