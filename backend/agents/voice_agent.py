@@ -20,34 +20,9 @@ from voice_server import check_call_status, get_call_data, initiate_call_with_pr
 from .config import Config
 from .state_models import State
 from . import firebase
+from ..prompts.prompt_manager import prompt_manager
 import time
 import asyncio
-
-
-voice_system_prompt = """You are an AI voice agent making calls to moving companies. You will act as the customer, by taking on the customer's name.
-Your goal is to:
-1. Introduce yourself professionally
-2. Clearly describe the customer's moving needs
-3. Get initial quote, and record the price
-4. Apply negotiation strategy to get best price
-5. Document all details of the conversation
-
-Remember: Do not reveal you are an AI. Maintain a professional and friendly tone. Do not make up any information that you don't know about the customer."""
-
-strategy_replanner_system_prompt = """
-You are a strategic negotiator. Based on the customer requirements and available movers.
-You need to create a detailed negotiation script that maximizes the customer's chances of getting the best price with good quality services.
-Be concise and write the plan in less than 10 sentences, and key the main points.
-Adapt the current strategy based on previous calls performed to other movers.
-"""
-
-conversation_text = (
-                "You are an talking as the user of this platform initiating a conversation to enquire about moving services."
-                "Your goal is to inquire about the moving services, asking for details, "
-                "pricing, and availability. Maintain a neutral tone throughout "
-                "the conversation. "
-            )
-strategy_summarizer_prompt = """You are a useful analyst that's good at summarizing details for key insights from past experiences."""
 
 # voice agent proxy for debugging
 def voice_agent_message(state: State):
@@ -72,26 +47,17 @@ LOG_EVENT_TYPES = [
 ]
 SHOW_TIMING_MATH = False
 
-INITIAL_PROMPT = (
-    "You are an talking as the user of this platform initiating a conversation to inquire specifically about moving services for from one location to another. "
-    "Your sole goal is to gather information about moving services, including details, pricing, and availability. "
-    "You must adhere to the following strict rules at all times during the conversation: "
-    "1. Do not provide any information or pretend to be the moving service provider. "
-    "2. Do not provide answers or opinions outside the scope of asking questions about moving services. "
-    "3. Always maintain a professional and neutral tone. "
-    "4. If asked about anything unrelated to moving services, politely redirect the conversation back to the topic. "
-    "For example: 'I am here to inquire about moving services. Could you please provide more details on that?' but don't reuse same line everytime. "
-    "5. Do not make assumptions or create fictitious details. Only ask for information and clarify when needed."
-    "6. If the other party's responses are unclear or ambiguous, politely ask for clarification. You can speak other languages if needed. like spanish, etc. if the user doesn't speak english and says stuff like 'no hablo inglis', but maintain the same instructions."
-)
-
 class VoiceAgent:
     def __init__(self, user_id, service_category: str = 'movers', model: str = Config.VOICE_MODEL):
         self.llm = ChatOpenAI(model=model)
         self.user_id = user_id
         self.service_category = service_category
+        
+        # Load service-specific voice prompts
+        voice_prompt = prompt_manager.get_prompt(service_category, 'voice_system')
+        
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", voice_system_prompt),
+            ("system", voice_prompt),
             ("human", "Customer Info: {customer_info}\nNegotiation Strategy: {strategy}\nMover: {mover}")
         ])
         print("Exiting VoiceAgent.__init__")
@@ -142,9 +108,13 @@ class VoiceAgent:
                     phone_number = mover.get('phone', os.getenv('SAMPLE_MOVER_PHONE_NUMBER'))
                     print(f"REAL CALL: Calling {mover['name']} at {phone_number}")
                     
+                    # Load service-specific initial prompt and conversation text
+                    initial_prompt = prompt_manager.get_prompt(self.service_category, 'voice_initial')
+                    conversation_text = prompt_manager.get_prompt(self.service_category, 'conversation_text')
+                    
                     call_sid = initiate_call_with_prompt(
                         phone_number, 
-                        INITIAL_PROMPT +  " " + str(customer_info) + " " + str(strategy), 
+                        initial_prompt +  " " + str(customer_info) + " " + str(strategy), 
                         conversation_text,
                         self.user_id
                     )
@@ -279,10 +249,13 @@ class VoiceAgent:
     def _make_call(self, customer_info, strategy, mover) -> Dict:
         print("Entering VoiceAgent._make_call")
         
+        # Load strategy summarizer prompt
+        summarizer_prompt = prompt_manager.get_prompt(self.service_category, 'strategy_summarizer')
+        
         # Summarize the call
         llm = ChatOpenAI(model=Config.ANALYST_MODEL)
         prompt = ChatPromptTemplate.from_messages([
-            ("system", strategy_summarizer_prompt),
+            ("system", summarizer_prompt),
             ("human", "Summarize the call based on the following call transcript: {transcript}. Make sure to include the actual price from the call."),
         ])
         chain = prompt | llm
@@ -305,10 +278,13 @@ class VoiceAgent:
     def _modify_strategy(self, summary_of_calls: List[str], strategy: str) -> str:
         # Implementation to modify the strategy based on the call transcript
 
+        # Load strategy replanner prompt
+        replanner_prompt = prompt_manager.get_prompt(self.service_category, 'strategy_replanner')
+
         # Construct the prompt for the LLM to modify the strategy
         llm = ChatOpenAI(model=Config.ANALYST_MODEL)
         prompt = ChatPromptTemplate.from_messages([
-            ("system", strategy_replanner_system_prompt),
+            ("system", replanner_prompt),
             ("human", "Modify the strategy for calling a different seller based on the following call transcripts: {summary_of_calls}. If the summary is not there, just ignore it. Make sure to provide quantifiable information (e.g., previous negotiation price) to negotiate the price with the new mover, and ask the model to negotiate based on that and mention it explicitly. Don't output anything else."),
         ])
         chain = prompt | llm

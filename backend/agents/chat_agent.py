@@ -27,56 +27,7 @@ from firebase_admin.firestore import firestore
 from .config import Config
 from .state_models import CustomerInfo
 from . import firebase
-
-chat_system_prompt = """
-You are an AI agent that helps in collection of information about the user for {service_type} services.
-
-Based on the service category, gather the relevant information:
-
-For MOVING services:
-1. Name, 2. Contact phone number, 3. Current address/zipcode, 4. Destination address/zipcode
-5. Move out date, 6. Move in date, 7. Size of apartment (bedrooms), 8. Inventory
-9. Packing assistance needed, 10. Special items, 11. Storage needs
-
-For TELECOM services:
-1. Name, 2. Contact phone number, 3. Current address/zipcode
-4. Current provider, 5. Current plan details, 6. Monthly bill amount
-7. Service needs (internet/phone/TV), 8. Speed requirements, 9. Contract end date
-
-For INSURANCE services:
-1. Name, 2. Contact phone number, 3. Address/zipcode
-4. Insurance type needed, 5. Current provider (if any), 6. Current premium
-7. Coverage requirements, 8. Deductible preferences, 9. Claims history
-
-For HOME SERVICES:
-1. Name, 2. Contact phone number, 3. Address/zipcode
-4. Service type needed, 5. Problem description, 6. Urgency level
-7. Previous service history, 8. Budget range, 9. Preferred timing
-
-For AUTO SERVICES:
-1. Name, 2. Contact phone number, 3. Address/zipcode
-4. Vehicle details (make/model/year), 5. Service needed, 6. Problem description
-7. Mileage, 8. Last service date, 9. Budget range
-
-For HEALTHCARE services:
-1. Name, 2. Contact phone number, 3. Address/zipcode
-4. Service type needed, 5. Current provider (if any), 6. Insurance details
-7. Medical history (relevant), 8. Urgency level, 9. Budget considerations
-
-For EDUCATION services:
-1. Name, 2. Contact phone number, 3. Address/zipcode
-4. Education type/level, 5. Subject area, 6. Current situation
-7. Budget range, 8. Timeline, 9. Specific requirements
-
-For PET SERVICES:
-1. Name, 2. Contact phone number, 3. Address/zipcode
-4. Pet type and details, 5. Service type needed, 6. Pet's medical history (if relevant)
-7. Special requirements, 8. Budget range, 9. Preferred timing
-
-Probe the user for information till you have everything you need for their specific service category.
-Be precise and keep the conversation short and to the point.
-If the user provides vague information, try to use reasonable estimates and ask for confirmation.
-"""
+from ..prompts.prompt_manager import prompt_manager
 
 class ChatAgent:
     def __init__(self, user_id: str, service_category: str = 'movers', model: str = Config.CHAT_MODEL):
@@ -84,23 +35,11 @@ class ChatAgent:
         self.user_id = user_id
         self.service_category = service_category
         
-        # Map service categories to readable names
-        service_names = {
-            'movers': 'MOVING',
-            'telecom': 'TELECOM',
-            'insurance': 'INSURANCE',
-            'home_services': 'HOME SERVICES',
-            'auto_services': 'AUTO SERVICES',
-            'healthcare': 'HEALTHCARE',
-            'education': 'EDUCATION',
-            'pet_services': 'PET SERVICES',
-            'finance': 'FINANCIAL/UTILITIES'
-        }
-        
-        service_type = service_names.get(service_category, 'MOVING')
+        # Load service-specific prompt
+        chat_prompt = prompt_manager.get_prompt(service_category, 'chat_system')
         
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", chat_system_prompt.format(service_type=service_type)),
+            ("system", chat_prompt),
             ("human", "{input}"),
         ])
 
@@ -132,12 +71,19 @@ class ChatAgent:
     def _extract_customer_info(self, content: str) -> Dict:
         # Implementation to parse the structured summary into CustomerInfo object
         # This would parse the LLM's response when it has collected all information
-        prompt = ChatPromptTemplate.from_messages([("human", """
-            Summarzie the customer information.
+        
+        # Use service-specific extraction prompt if available, otherwise use generic
+        try:
+            extraction_prompt = prompt_manager.get_prompt(self.service_category, 'customer_extraction')
+        except FileNotFoundError:
+            extraction_prompt = """
+            Summarize the customer information.
             If the user does not provide zipcodes, infer them from the address / city. The addresses must have zipcodes.
             If the user doesn't provide inventory, assume it based on the size of the apartment.
             {request}
-        """)])
+            """
+        
+        prompt = ChatPromptTemplate.from_messages([("human", extraction_prompt)])
         chain = prompt | self.llm.with_structured_output(CustomerInfo)
         customer_info: CustomerInfo = chain.invoke({"request": content})
         firebase.update_data(self.user_id, { "customerInfo": customer_info.model_dump() })

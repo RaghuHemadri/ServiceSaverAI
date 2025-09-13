@@ -4,35 +4,33 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from .config import Config
 from . import firebase
-
-analyst_system_prompt = """You are a service analyst. Your task is to:
-1. Review all call transcripts
-2. Compare quotes and services offered
-3. Analyze the negotiation results
-4. Make a final recommendation based on:
-   - Price
-   - Services included
-   - Customer needs
-   - Other factors (e.g., provider's reputation, reviews, etc.)
-
-Format your response as a clear recommendation on who to choose with supporting evidence, if no clear evidence, respond with INCONCLUSIVE.
-List the vendors you contacted and explain their differences on how you arrived at your final recommendation.
-The final output should be in the following format:
-
-Final Recommendation: Vendor name
-
-**Rationale**
-[Evidence supporting recommendation]
-"""
+from ..prompts.prompt_manager import prompt_manager
 
 class AnalystAgent:
     def __init__(self, user_id: str, service_category: str = 'movers', model: str = Config.ANALYST_MODEL):
         self.llm = ChatOpenAI(model=model)
         self.user_id = user_id
         self.service_category = service_category
-        self.user_id = user_id
+        
+        # Load service-specific analyst prompt
+        analyst_prompt = prompt_manager.get_prompt(service_category, 'analyst_system')
+        
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", analyst_system_prompt),
+            ("system", analyst_prompt),
+            ("human", "Based on the call transcripts: {transcripts}, provide your analysis and recommendation.")
+        ])
+
+class AnalystAgent:
+    def __init__(self, user_id: str, service_category: str = 'movers', model: str = Config.ANALYST_MODEL):
+        self.llm = ChatOpenAI(model=model)
+        self.user_id = user_id
+        self.service_category = service_category
+        
+        # Load service-specific analyst prompt
+        analyst_prompt = prompt_manager.get_prompt(service_category, 'analyst_system')
+        
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", analyst_prompt),
             ("human", "Customer Info: {customer_info}\nCall Transcripts: {transcripts}")
         ])
 

@@ -8,12 +8,7 @@ from langchain_openai import ChatOpenAI
 from .config import Config
 from .state_models import CustomerInfo, MoverInfo, FilteredMovers
 from . import firebase
-
-# system prompt for creating a new negotiation strategy
-planner_system_prompt = """You are a strategic negotiator. Based on the customer requirements and available movers,
-you need to create a detailed negotiation instruction for a phone call that maximizes the customer's chances of getting the best price with good quality services.
- Be concise and write the plan in less than 10 sentences, and include key points only.
-"""
+from ..prompts.prompt_manager import prompt_manager
 
 class StrategistAgent:
     def __init__(self, user_id: str, service_category: str = 'movers', model: str = Config.PLANNER_MODEL):
@@ -51,9 +46,12 @@ class StrategistAgent:
         customer_info = state["customer_info"]
         selected_providers = self._get_providers_data(customer_info)
 
+        # Load service-specific strategist prompt
+        strategist_prompt = prompt_manager.get_prompt(self.service_category, 'strategist_system')
+
         # add prompt and construct the chain
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", planner_system_prompt),
+            ("system", strategist_prompt),
             ("human", "Generate a concise instruction for guiding the voice agent to negotiate with the service provider through a phone call. Make sure to include the customer information {customer_info}."),
         ])
         chain = self.prompt | self.llm
@@ -74,16 +72,13 @@ class StrategistAgent:
     def _get_providers_data(self, customer_info: CustomerInfo) -> List[Dict]:
 
         providers = self.providers_db.to_dict('records')
+        
+        # Load service-specific filter prompt
+        filter_prompt_text = prompt_manager.get_prompt(self.service_category, 'provider_filter')
+        
         filter_prompt = ChatPromptTemplate.from_messages([
-            ("system", """
-                You are a helpful assistant that filters a list of mover vendors based on the user's criteria.
-                First determine if the move is local or long distance based on the source and destination zipcodes,
-                if zipcodes are not available try to assume them based on the greater area provided.
-                Filter only the top 3 movers that best fit the user based on their information.
-                Return the names of the filtered movers as a list.
-                Also provide a rationale for the filtering.
-            """),
-            ("human", "Filter the list of movers: {movers} based on the customer information {customer_info}."),
+            ("system", filter_prompt_text),
+            ("human", "Filter the list of providers: {movers} based on the customer information {customer_info}."),
         ])
         chain = filter_prompt | self.llm.with_structured_output(FilteredMovers)
         response: FilteredMovers = chain.invoke({ "customer_info": customer_info, "movers": providers })
